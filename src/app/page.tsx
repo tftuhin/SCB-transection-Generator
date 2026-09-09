@@ -21,6 +21,21 @@ export default function GeneratorPage() {
   const [rows, setRows] = useState<TransferRow[]>([
     { id: crypto.randomUUID(), vendorId: null, amount: "", description: "", transferDate: "" }
   ]);
+  const [debitAccount, setDebitAccount] = useState<string>("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("scb_debit_account");
+    if (saved) {
+      setDebitAccount(saved);
+    } else if (process.env.NEXT_PUBLIC_SCB_DEBIT_ACCOUNT) {
+      setDebitAccount(process.env.NEXT_PUBLIC_SCB_DEBIT_ACCOUNT);
+    }
+  }, []);
+
+  const handleDebitAccountChange = (val: string) => {
+    setDebitAccount(val);
+    localStorage.setItem("scb_debit_account", val);
+  };
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -71,6 +86,11 @@ export default function GeneratorPage() {
       return;
     }
 
+    if (!debitAccount.trim()) {
+      alert("Please enter a Debit Account Number before generating the Excel file.");
+      return;
+    }
+
     const excelData = validRows.map(row => {
       const vendor = vendors.find(v => v.id === row.vendorId);
       if (!vendor) return null;
@@ -91,7 +111,7 @@ export default function GeneratorPage() {
         "Payment Amount": row.amount,
         "Reason(140)": row.description,
         "Date(DD/MM/YYYY)": formattedDate,
-        "Debit Account Number(Prefix- 00 BDT)": "0000000000000",
+        "Debit Account Number(Prefix- 00 BDT)": debitAccount.trim(),
         "Beneficiary Email ID(Optional)": ""
       };
     }).filter(Boolean);
@@ -113,6 +133,28 @@ export default function GeneratorPage() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">SCB Transection Generator</h1>
         <p className="text-sm sm:text-base text-gray-500 mt-1 sm:mt-2">Create multiple transfer records and generate the bank Excel file.</p>
+      </div>
+
+      {/* Debit Account Card */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div>
+          <label className="block text-sm font-semibold text-gray-900">
+            SCB Debit Account Number *
+          </label>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Your funding debit account number. Saved securely in your browser.
+          </p>
+        </div>
+        <div className="w-full sm:w-72">
+          <input
+            type="text"
+            required
+            value={debitAccount}
+            onChange={(e) => handleDebitAccountChange(e.target.value)}
+            placeholder="e.g. 0001234567890"
+            className="w-full px-3.5 py-2 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          />
+        </div>
       </div>
 
       {!isSupabaseConfigured && (
