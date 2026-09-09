@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase, isSupabaseConfigured, type Vendor } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured, type Vendor, type DebitAccount } from "@/lib/supabase";
 import Select from "react-select";
 import { Plus, Trash2, FileSpreadsheet, AlertCircle, RotateCcw } from "lucide-react";
 import Link from "next/link";
@@ -22,19 +22,21 @@ export default function GeneratorPage() {
     { id: crypto.randomUUID(), vendorId: null, amount: "", description: "", transferDate: "" }
   ]);
   const [debitAccount, setDebitAccount] = useState<string>("");
+  const [debitAccounts, setDebitAccounts] = useState<DebitAccount[]>([]);
 
-  // Automatically pull debit account from Supabase database on load
+  // Automatically pull debit accounts from Supabase database on load
   useEffect(() => {
     const loadDebitAccount = async () => {
       if (isSupabaseConfigured) {
         try {
           const { data } = await supabase
             .from("debit_accounts")
-            .select("account_number, is_default")
+            .select("*")
             .order("is_default", { ascending: false })
             .order("created_at", { ascending: false });
 
           if (data && data.length > 0) {
+            setDebitAccounts(data);
             const defaultAcc = data.find((a) => a.is_default) || data[0];
             if (defaultAcc?.account_number) {
               setDebitAccount(defaultAcc.account_number);
@@ -162,7 +164,7 @@ export default function GeneratorPage() {
         <p className="text-sm sm:text-base text-gray-500 mt-1 sm:mt-2">Create multiple transfer records and generate the bank Excel file.</p>
       </div>
 
-      {/* Single Debit Account Field */}
+      {/* Debit Account Dropdown Selector */}
       <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <label htmlFor="debit-account" className="block text-sm font-semibold text-gray-900">
@@ -173,15 +175,27 @@ export default function GeneratorPage() {
           </p>
         </div>
         <div className="w-full sm:w-80">
-          <input
+          <select
             id="debit-account"
-            type="text"
             required
             value={debitAccount}
             onChange={(e) => handleDebitAccountChange(e.target.value)}
-            placeholder="e.g. 0001234567890"
-            className="w-full px-3.5 py-2.5 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
-          />
+            className="w-full px-3.5 py-2.5 border rounded-lg font-mono text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs cursor-pointer"
+          >
+            {debitAccounts.length > 0 ? (
+              debitAccounts.map((acc) => (
+                <option key={acc.id} value={acc.account_number}>
+                  {acc.account_number} — {acc.account_label || acc.bank_name || "SCB"} {acc.is_default ? "★" : ""}
+                </option>
+              ))
+            ) : debitAccount ? (
+              <option value={debitAccount}>
+                {debitAccount} (Default Account)
+              </option>
+            ) : (
+              <option value="">-- Select Debit Account --</option>
+            )}
+          </select>
         </div>
       </div>
 
