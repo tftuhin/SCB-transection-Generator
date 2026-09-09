@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileSpreadsheet, Users, Menu, X, LogOut, CreditCard } from "lucide-react";
+import { FileSpreadsheet, Users, Menu, X, CreditCard } from "lucide-react";
 
 const navItems = [
   {
@@ -28,16 +28,6 @@ export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const closeMobile = () => setIsMobileOpen(false);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      window.location.href = "/login";
-    } catch (err) {
-      console.error(err);
-      window.location.href = "/login";
-    }
-  };
 
   return (
     <>
@@ -126,17 +116,9 @@ export default function Sidebar() {
               })}
             </nav>
 
-            <div className="p-3 border-t flex items-center justify-between text-xs text-gray-400">
+            <div className="p-3.5 border-t flex items-center justify-between text-xs text-gray-400">
               <span>SCB Banking Tool</span>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1 text-gray-500 hover:text-red-600 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
-                title="Lock Workspace"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Lock</span>
-              </button>
+              <span>v1.0</span>
             </div>
           </aside>
         </div>
@@ -187,18 +169,10 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Footer info & Logout */}
-        <div className="p-3 border-t flex items-center justify-between text-xs text-gray-400">
+        {/* Footer info */}
+        <div className="p-3.5 border-t flex items-center justify-between text-xs text-gray-400">
           <span>SCB Banking Tool</span>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="inline-flex items-center gap-1 text-gray-500 hover:text-red-600 px-2 py-1 rounded-md hover:bg-red-50 transition-colors"
-            title="Lock Workspace"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Lock</span>
-          </button>
+          <span>v1.0</span>
         </div>
       </aside>
     </>
