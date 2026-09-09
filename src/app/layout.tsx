@@ -11,8 +11,28 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://scb-transection-generator.vercel.app'),
   title: "SCB Transection Generator",
-  description: "SCB bank transfer excel generator",
+  description: "Create multiple transfer records and generate the bank Excel file.",
+  openGraph: {
+    title: "SCB Transection Generator",
+    description: "Create multiple transfer records and generate the bank Excel file.",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SCB Transection Generator Preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SCB Transection Generator",
+    description: "Create multiple transfer records and generate the bank Excel file.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
