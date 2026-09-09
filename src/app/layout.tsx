@@ -42,12 +42,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} antialiased bg-gray-50`}>
-        <div className="flex h-screen overflow-hidden">
-          {/* Sidebar */}
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+          {/* Sidebar (Mobile Header + Drawer / Desktop Sidebar) */}
           <Sidebar />
 
           {/* Main Content */}
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 w-full overflow-y-auto min-h-0">
             {children}
           </main>
         </div>

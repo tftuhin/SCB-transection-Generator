@@ -106,20 +106,20 @@ export default function GeneratorPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       <div>
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-2">
           SCB Banking Tool
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">SCB Transection Generator</h1>
-        <p className="text-gray-500 mt-2">Create multiple transfer records and generate the bank Excel file.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">SCB Transection Generator</h1>
+        <p className="text-sm sm:text-base text-gray-500 mt-1 sm:mt-2">Create multiple transfer records and generate the bank Excel file.</p>
       </div>
 
       {!isSupabaseConfigured && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 flex items-start justify-between gap-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm">
+            <div className="text-xs sm:text-sm">
               <p className="font-semibold">Supabase connection required</p>
               <p className="mt-1">
                 Configure your Supabase URL & anon key in <code className="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-xs">.env.local</code> to pull saved beneficiary accounts into this dropdown.
@@ -128,88 +128,103 @@ export default function GeneratorPage() {
           </div>
           <Link
             href="/vendors"
-            className="text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg whitespace-nowrap"
+            className="text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg whitespace-nowrap self-start sm:self-auto"
           >
             Manage Vendors
           </Link>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border shadow-sm p-6">
+      <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-6">
         <div className="space-y-4">
-          {rows.map((row) => (
-            <div key={row.id} className="flex flex-wrap md:flex-nowrap items-start gap-4 p-4 border rounded-lg bg-gray-50">
-              
-              {/* Vendor Selection */}
-              <div className="flex-1 min-w-[250px]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Receiver *</label>
-                <Select 
-                  options={vendorOptions}
-                  value={vendorOptions.find(o => o.value === row.vendorId) || null}
-                  onChange={(val) => handleRowChange(row.id, "vendorId", val?.value || null)}
-                  placeholder="Search receiver..."
-                  className="text-sm"
-                  styles={{ control: (base) => ({ ...base, minHeight: '42px' }) }}
-                />
-              </div>
-
-              {/* Amount */}
-              <div className="w-full md:w-32">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount *</label>
-                <input 
-                  type="number" 
-                  value={row.amount}
-                  onChange={(e) => handleRowChange(row.id, "amount", e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px]" 
-                  placeholder="0.00" 
-                />
-              </div>
-
-              {/* Description (Max 100 chars) */}
-              <div className="flex-1 min-w-[200px]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Max 100)</label>
-                <input 
-                  type="text" 
-                  maxLength={100}
-                  value={row.description}
-                  onChange={(e) => handleRowChange(row.id, "description", e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px]" 
-                  placeholder="Transfer reason..." 
-                />
-              </div>
-
-              {/* Transfer Date */}
-              <div className="w-full md:w-40">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                <input 
-                  type="date" 
-                  value={row.transferDate}
-                  onChange={(e) => handleRowChange(row.id, "transferDate", e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px]" 
-                />
-              </div>
-
-              {/* Remove Action */}
-              <div className="flex items-end self-end h-[42px] mb-1">
+          {rows.map((row, index) => (
+            <div key={row.id} className="p-3.5 sm:p-4 border rounded-xl bg-gray-50/70 hover:bg-gray-50 transition-colors space-y-3">
+              {/* Mobile Header for this row */}
+              <div className="flex items-center justify-between md:hidden pb-2 border-b border-gray-200/70">
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                  Transfer #{index + 1}
+                </span>
                 <button 
                   onClick={() => removeRow(row.id)}
                   disabled={rows.length === 1}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-                  title="Remove Row"
+                  className="p-1 text-red-500 hover:bg-red-50 rounded-md disabled:opacity-25 disabled:hover:bg-transparent transition-colors"
+                  title="Remove Transfer"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4 items-start">
+                {/* Vendor Selection */}
+                <div className="sm:col-span-2 md:col-span-4">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Receiver *</label>
+                  <Select 
+                    options={vendorOptions}
+                    value={vendorOptions.find(o => o.value === row.vendorId) || null}
+                    onChange={(val) => handleRowChange(row.id, "vendorId", val?.value || null)}
+                    placeholder="Search receiver..."
+                    className="text-sm"
+                    styles={{ control: (base) => ({ ...base, minHeight: '42px', borderRadius: '0.375rem' }) }}
+                  />
+                </div>
+
+                {/* Amount */}
+                <div className="sm:col-span-1 md:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Amount *</label>
+                  <input 
+                    type="number" 
+                    value={row.amount}
+                    onChange={(e) => handleRowChange(row.id, "amount", e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px] text-sm" 
+                    placeholder="0.00" 
+                  />
+                </div>
+
+                {/* Description (Max 100 chars) */}
+                <div className="sm:col-span-1 md:col-span-3">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Description (Max 100)</label>
+                  <input 
+                    type="text" 
+                    maxLength={100}
+                    value={row.description}
+                    onChange={(e) => handleRowChange(row.id, "description", e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px] text-sm" 
+                    placeholder="Transfer reason..." 
+                  />
+                </div>
+
+                {/* Transfer Date */}
+                <div className="sm:col-span-1 md:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <input 
+                    type="date" 
+                    value={row.transferDate}
+                    onChange={(e) => handleRowChange(row.id, "transferDate", e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 min-h-[42px] text-sm" 
+                  />
+                </div>
+
+                {/* Desktop Remove Action */}
+                <div className="hidden md:flex md:col-span-1 items-end self-end h-[42px] mb-0.5 justify-center">
+                  <button 
+                    onClick={() => removeRow(row.id)}
+                    disabled={rows.length === 1}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                    title="Remove Row"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t pt-6">
-          <div className="flex items-center gap-3">
+        <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-t pt-6">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={addRow}
-              className="flex items-center text-blue-600 hover:text-blue-700 font-medium px-4 py-2 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+              className="flex-1 sm:flex-none flex items-center justify-center text-blue-600 hover:text-blue-700 font-medium px-4 py-2.5 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200 text-sm"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Another Transfer
@@ -217,17 +232,17 @@ export default function GeneratorPage() {
 
             <button 
               onClick={handleReset}
-              className="flex items-center text-gray-600 hover:text-red-600 font-medium px-4 py-2 hover:bg-red-50 rounded-lg transition-colors border border-gray-200 hover:border-red-200"
+              className="flex items-center justify-center text-gray-600 hover:text-red-600 font-medium px-3.5 py-2.5 hover:bg-red-50 rounded-lg transition-colors border border-gray-200 hover:border-red-200 text-sm"
               title="Reset form and clear all entries"
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
+              <RotateCcw className="w-4 h-4 mr-1.5" />
               Reset
             </button>
           </div>
 
           <button 
             onClick={handleGenerateExcel}
-            className="flex items-center bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-sm"
+            className="w-full sm:w-auto flex items-center justify-center bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-sm text-sm"
           >
             <FileSpreadsheet className="w-5 h-5 mr-2" />
             Generate Excel
