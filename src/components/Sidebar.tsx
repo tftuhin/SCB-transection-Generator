@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileSpreadsheet, Users, Menu, X, LogOut } from "lucide-react";
+import { FileSpreadsheet, Users, Menu, X, LogOut, CreditCard } from "lucide-react";
 
 const navItems = [
   {
@@ -15,6 +15,11 @@ const navItems = [
     name: "Vendor Pool",
     href: "/vendors",
     icon: Users,
+  },
+  {
+    name: "Debit Accounts",
+    href: "/debit-accounts",
+    icon: CreditCard,
   },
 ];
 

@@ -22,3 +22,13 @@ export type Vendor = {
   routing_number: string;
   created_at?: string;
 };
+
+export type DebitAccount = {
+  id: string; // uuid
+  account_number: string;
+  account_label: string;
+  bank_name: string;
+  is_default: boolean;
+  created_at?: string;
+};
+
